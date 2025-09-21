@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OptiChain – Forecasting & Analytics</title>
+  <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1a365d;
+      --secondary-color: #2a4365;
+      --accent-color: #3182ce;
+      --success-color: #38a169;
+      --warning-color: #d69e2e;
+      --danger-color: #e53e3e;
+      --light-color: #f7fafc;
+      --dark-color: #2d3748;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --border-radius: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: var(--dark-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      padding: 15px 0;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      animation: slideDown 0.5s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 5px;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    nav ul li a:hover, nav ul li a.active {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    nav ul li a i {
+      font-size: 16px;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* Card Styles */
+    .card {
+      background: white;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 25px;
+      margin-bottom: 25px;
+      transition: var(--transition);
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 15px;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-icon {
+      font-size: 24px;
+      color: var(--accent-color);
+    }
+
+    /* Upload Section */
+    .upload-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--accent-color);
+      border-radius: var(--border-radius);
+      padding: 30px;
+      text-align: center;
+      background: rgba(49, 130, 206, 0.05);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-area::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(49, 130, 206, 0.1), rgba(49, 130, 206, 0.2));
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: -1;
+    }
+
+    .upload-area:hover::before {
+      opacity: 1;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+      transform: scale(1.02);
+    }
+
+    .upload-area.dragover {
+      background: rgba(49, 130, 206, 0.1);
+      border-color: var(--primary-color);
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .upload-button {
+      background: linear-gradient(90deg, var(--accent-color), #63b3ed);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      margin-top: 15px;
+      box-shadow: 0 4px 6px -1px rgba(49, 130, 206, 0.3);
+    }
+
+    .upload-button:hover {
+      background: linear-gradient(90deg, #2c5282, var(--accent-color));
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .upload-button:disabled {
+      background: #a0aec0;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Forecast Summary */
+    .forecast-summary {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: var(--border-radius);
+      padding: 20px;
+    }
+
+    .summary-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      text-align: center;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-color);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease-out;
+    }
+
+    .metric-card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+
+    .metric-label {
+      font-size: 14px;
+      color: var(--dark-color);
+      font-weight: 500;
+    }
+
+    .metric-info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #718096;
+    }
+
+    .metric-info i {
+      margin-right: 5px;
+      color: var(--accent-color);
+    }
+
+    /* Model Comparison */
+    .model-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .model-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: var(--transition);
+    }
+
+    .model-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .model-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .model-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      font-size: 18px;
+    }
+
+    .arima-icon {
+      background: rgba(49, 130, 206, 0.1);
+      color: var(--accent-color);
+    }
+
+    .prophet-icon {
+      background: rgba(56, 161, 105, 0.1);
+      color: var(--success-color);
+    }
+
+    .model-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .model-params {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .param-tag {
+      background: #edf2f7;
+      color: var(--dark-color);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #e2e8f0;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+      white-space: nowrap;
+      font-weight: 500;
+      color: #718096;
+    }
+
+    .tab.active {
+      border-bottom: 3px solid var(--accent-color);
+      color: var(--primary-color);
+    }
+
+    .tab:hover {
+      color: var(--accent-color);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Chart Container */
+    .chart-container {
+      height: 400px;
+      margin-top: 20px;
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: white;
+      padding: 15px;
+    }
+
+    /* Business Impact */
+    .business-impact {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .impact-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .impact-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .impact-item {
+      background: white;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .impact-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cost-icon {
+      background: rgba(229, 62, 62, 0.1);
+      color: var(--danger-color);
+    }
+
+    .revenue-icon {
+      background: rgba(56, 161, 105, 0.1);
+      color: var(--success-color);
+    }
+
+    .efficiency-icon {
+      background: rgba(49, 130, 206, 0.1);
+      color: var(--accent-color);
+    }
+
+    .satisfaction-icon {
+      background: rgba(214, 158, 46, 0.1);
+      color: var(--warning-color);
+    }
+
+    .impact-text h4 {
+      font-size: 16px;
+      margin-bottom: 5px;
+      color: var(--dark-color);
+    }
+
+    .impact-text p {
+      font-size: 14px;
+      color: #718096;
+      margin: 0;
+    }
+
+    /* Analytics Enhancements */
+    .insight-card {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid var(--accent-color);
+    }
+
+    .insight-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .insight-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .insight-badge {
+      background: var(--accent-color);
+      color: white;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+
+    .insight-content {
+      color: var(--dark-color);
+      margin-bottom: 15px;
+    }
+
+    .insight-metrics {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .insight-metric {
+      background: #f8f9fa;
+      padding: 10px 15px;
+      border-radius: var(--border-radius);
+      font-size: 14px;
+    }
+
+    .insight-metric span {
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+
+    .forecast-projection {
+      background: linear-gradient(135deg, #ebf8ff, #bee3f8);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .projection-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .projection-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+
+    .projection-item {
+      background: white;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .projection-item h4 {
+      font-size: 16px;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .projection-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+
+    .projection-desc {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .recommendations {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .recommendation-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .recommendation-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .recommendation-item {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--success-color);
+      transition: var(--transition);
+    }
+
+    .recommendation-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .recommendation-item h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .recommendation-item p {
+      font-size: 14px;
+      color: var(--dark-color);
+      margin: 0;
+    }
+
+    .recommendation-priority {
+      display: inline-block;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 10px;
+      font-weight: 500;
+    }
+
+    .priority-high {
+      background: rgba(229, 62, 62, 0.1);
+      color: var(--danger-color);
+    }
+
+    .priority-medium {
+      background: rgba(214, 158, 46, 0.1);
+      color: var(--warning-color);
+    }
+
+    .priority-low {
+      background: rgba(56, 161, 105, 0.1);
+      color: var(--success-color);
+    }
+
+    /* Loading */
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid var(--accent-color);
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      color: white;
+      box-shadow: var(--shadow);
+      z-index: 1000;
+      transform: translateX(150%);
+      transition: transform 0.3s ease-out;
+      max-width: 300px;
+    }
+
+    .notification.show {
+      transform: translateX(0);
+    }
+
+    .notification.success {
+      background: var(--success-color);
+    }
+
+    .notification.error {
+      background: var(--danger-color);
+    }
+
+    /* Success Animation */
+    .success-animation {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2000;
+      text-align: center;
+    }
+
+    .success-circle {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--success-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      animation: scaleIn 0.5s ease-out;
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .success-circle i {
+      font-size: 40px;
+      color: white;
+    }
+
+    .success-message {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .success-description {
+      font-size: 16px;
+      color: #718096;
+      margin-bottom: 20px;
+    }
+
+    /* About Section */
+    .about-section {
+      background: white;
+      border-radius: var(--border-radius);
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .about-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .about-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .about-subtitle {
+      font-size: 18px;
+      color: var(--dark-color);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .feature {
+      background: #f8f9fa;
+      border-radius: var(--border-radius);
+      padding: 25px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--accent-color);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.3s ease-out;
+    }
+
+    .feature:hover::before {
+      transform: scaleY(1);
+    }
+
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+      font-size: 32px;
+      color: var(--accent-color);
+      margin-bottom: 15px;
+    }
+
+    .feature-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    .feature-description {
+      color: #718096;
+      font-size: 15px;
+    }
+
+    /* Restart Button */
+    .restart-button {
+      background: linear-gradient(90deg, var(--danger-color), #fc8181);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 20px auto;
+      box-shadow: 0 4px 6px -1px rgba(229, 62, 62, 0.3);
+    }
+
+    .restart-button:hover {
+      background: linear-gradient(90deg, #c53030, var(--danger-color));
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav ul {
+        margin-top: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .upload-section {
+        grid-template-columns: 1fr;
+      }
+
+      .model-comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .about-title {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">
+        OptiChain
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#" class="nav-link active" data-section="home"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="#" class="nav-link" data-section="analytics"><i class="fas fa-chart-line"></i> Analytics</a></li>
+          <li><a href="#" class="nav-link" data-section="about"><i class="fas fa-info-circle"></i> About</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div id="home" class="content-section">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-cloud-upload-alt card-icon"></i> Data Upload</h2>
+        </div>
+        <div class="upload-section">
+          <div class="upload-area" id="uploadArea">
+            <i class="fas fa-file-csv upload-icon"></i>
+            <h3>Drag & Drop your data file here</h3>
+            <p>or click to browse files</p>
+            <p style="font-size: 14px; color: #718096; margin-top: 10px;">Supported formats: CSV, Excel</p>
+            <input type="file" id="fileInput" class="file-input" name="file" accept=".csv,.xlsx,.xls">
+            <button id="uploadButton" class="upload-button">Upload & Forecast</button>
+          </div>
+          
+          <div class="forecast-summary">
+            <h3 class="summary-title">Forecast Accuracy Metrics</h3>
+            <div class="metrics">
+              <div class="metric-card">
+                <div class="metric-value" id="mape">--</div>
+                <div class="metric-label">MAPE (%)</div>
+                <div class="metric-info">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Mean Absolute Percentage Error</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-value" id="rmse">--</div>
+                <div class="metric-label">RMSE</div>
+                <div class="metric-info">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Root Mean Square Error</span>
+                </div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-value" id="accuracy">--</div>
+                <div class="metric-label">Accuracy (%)</div>
+                <div class="metric-info">
+                  <i class="fas fa-info-circle"></i>
+                  <span>Forecast Accuracy</span>
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 14px; color: #718096; margin-top: 15px;">
+              <strong>MAPE</strong> measures the average magnitude of errors in percentage terms. Lower values indicate better accuracy.<br>
+              <strong>RMSE</strong> measures the square root of the average of squared errors. Lower values indicate better fit.
+            </p>
+          </div>
+        </div>
+        
+        <div id="loading" class="loading">
+          <div class="spinner"></div>
+          <p>Processing your data with ARIMA & Prophet models...</p>
+        </div>
+      </div>
+    </div>
+    
+    <div id="analytics" class="content-section" style="display: none;">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-analytics card-icon"></i> Forecast Analytics</h2>
+        </div>
+        
+        <div class="tabs">
+          <div class="tab active" data-tab="arima-details">ARIMA Details</div>
+          <div class="tab" data-tab="prophet-details">Prophet Details</div>
+          <div class="tab" data-tab="model-comparison">Model Comparison</div>
+          <div class="tab" data-tab="business-impact">Business Impact</div>
+        </div>
+        
+        <div class="tab-content active" id="arima-details-tab">
+          <h3>ARIMA Model Analysis</h3>
+          <p>Detailed analysis of the ARIMA forecasting model results.</p>
+          <div id="arimaDetailsChart" class="chart-container"></div>
+        </div>
+        
+        <div class="tab-content" id="prophet-details-tab">
+          <h3>Prophet Model Analysis</h3>
+          <p>Detailed analysis of the Prophet forecasting model results.</p>
+          <div id="prophetDetailsChart" class="chart-container"></div>
+        </div>
+        
+        <div class="tab-content" id="model-comparison-tab">
+          <h3>Model Comparison</h3>
+          <p>Comparative analysis of ARIMA and Prophet models.</p>
+          <div id="modelComparisonChart" class="chart-container"></div>
+        </div>
+        
+        <div class="tab-content" id="business-impact-tab">
+          <div class="forecast-projection">
+            <h3 class="projection-title"><i class="fas fa-chart-pie"></i> Demand Projections</h3>
+            <div class="projection-items">
+              <div class="projection-item">
+                <h4><i class="fas fa-calendar-alt"></i> Next Quarter</h4>
+                <div class="projection-value" id="next-quarter-demand">+12%</div>
+                <div class="projection-desc">Projected demand increase compared to current quarter</div>
+              </div>
+              <div class="projection-item">
+                <h4><i class="fas fa-chart-line"></i> Peak Demand Period</h4>
+                <div class="projection-value" id="peak-period">July-August</div>
+                <div class="projection-desc">Highest demand expected during these months</div>
+              </div>
+              <div class="projection-item">
+                <h4><i class="fas fa-exclamation-triangle"></i> Stockout Risk</h4>
+                <div class="projection-value" id="stockout-risk">Medium</div>
+                <div class="projection-desc">Risk of stockout if current inventory levels maintained</div>
+              </div>
+              <div class="projection-item">
+                <h4><i class="fas fa-boxes"></i> Recommended Stock</h4>
+                <div class="projection-value" id="recommended-stock">+18%</div>
+                <div class="projection-desc">Recommended increase in inventory levels</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="insight-card">
+            <div class="insight-header">
+              <h3 class="insight-title"><i class="fas fa-lightbulb"></i> Key Insight</h3>
+              <span class="insight-badge">High Impact</span>
+            </div>
+            <div class="insight-content">
+              Based on current sales trends and inventory levels, our models predict a <strong>10-15% increase in demand</strong> for the next quarter. This is driven by seasonal factors and recent market growth. Without adjusting inventory levels, there's a <strong>35% probability of stockouts</strong> during peak periods, which could result in approximately <strong>$120,000 in lost revenue</strong>.
+            </div>
+            <div class="insight-metrics">
+              <div class="insight-metric">Demand Growth: <span>10-15%</span></div>
+              <div class="insight-metric">Stockout Probability: <span>35%</span></div>
+              <div class="insight-metric">Potential Revenue Loss: <span>$120,000</span></div>
+            </div>
+          </div>
+          
+          <div class="recommendations">
+            <h3 class="recommendation-title"><i class="fas fa-clipboard-list"></i> Actionable Recommendations</h3>
+            <div class="recommendation-list">
+              <div class="recommendation-item">
+                <h4>
+                  <i class="fas fa-arrow-up"></i> Increase Inventory Levels
+                  <span class="recommendation-priority priority-high">High</span>
+                </h4>
+                <p>Increase safety stock by 18% to accommodate projected demand growth and reduce stockout risk. This will require an additional investment of approximately $85,000 but will prevent $120,000 in lost revenue.</p>
+              </div>
+              <div class="recommendation-item">
+                <h4>
+                  <i class="fas fa-truck"></i> Optimize Supply Chain
+                  <span class="recommendation-priority priority-medium">Medium</span>
+                </h4>
+                <p>Negotiate faster delivery terms with key suppliers to reduce lead times by 3-5 days. This will improve responsiveness to demand fluctuations and reduce required safety stock levels.</p>
+              </div>
+              <div class="recommendation-item">
+                <h4>
+                  <i class="fas fa-chart-bar"></i> Implement Dynamic Pricing
+                  <span class="recommendation-priority priority-medium">Medium</span>
+                </h4>
+                <p>Introduce dynamic pricing strategies during peak demand periods to optimize revenue and manage inventory levels. This could increase profit margins by 4-6% during high-demand periods.</p>
+              </div>
+              <div class="recommendation-item">
+                <h4>
+                  <i class="fas fa-sync-alt"></i> Enhance Forecasting Model
+                  <span class="recommendation-priority priority-low">Low</span>
+                </h4>
+                <p>Incorporate additional external factors such as economic indicators, competitor pricing, and social media sentiment into the forecasting models to improve accuracy by 3-5%.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="business-impact">
+            <h3 class="impact-title"><i class="fas fa-briefcase"></i> Financial Impact</h3>
+            <div class="impact-items">
+              <div class="impact-item">
+                <div class="impact-icon cost-icon">
+                  <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="impact-text">
+                  <h4>Cost Reduction</h4>
+                  <p>Optimize inventory levels to reduce holding costs by <span id="analytics-cost-reduction">12%</span>, saving approximately <span id="analytics-cost-savings">$65,000</span> annually.</p>
+                </div>
+              </div>
+              <div class="impact-item">
+                <div class="impact-icon revenue-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="impact-text">
+                  <h4>Revenue Increase</h4>
+                  <p>Prevent stockouts and optimize pricing to increase revenue by <span id="analytics-revenue-increase">8%</span>, generating approximately <span id="analytics-revenue-gain">$210,000</span> annually.</p>
+                </div>
+              </div>
+              <div class="impact-item">
+                <div class="impact-icon efficiency-icon">
+                  <i class="fas fa-cogs"></i>
+                </div>
+                <div class="impact-text">
+                  <h4>Operational Efficiency</h4>
+                  <p>Improve supply chain efficiency by <span id="analytics-efficiency-improvement">15%</span>, reducing processing time and resource requirements.</p>
+                </div>
+              </div>
+              <div class="impact-item">
+                <div class="impact-icon satisfaction-icon">
+                  <i class="fas fa-smile"></i>
+                </div>
+                <div class="impact-text">
+                  <h4>Customer Satisfaction</h4>
+                  <p>Improve order fulfillment rate by <span id="analytics-satisfaction-improvement">22%</span>, leading to higher customer retention and repeat purchases.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button id="restartButton" class="restart-button">
+            <i class="fas fa-redo"></i> Restart Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="about" class="content-section" style="display: none;">
+      <div class="about-section">
+        <div class="about-header">
+          <h1 class="about-title">About OptiChain</h1>
+          <p class="about-subtitle">Advanced forecasting and analytics platform powered by ARIMA and Prophet models</p>
+        </div>
+        
+        <p style="margin-bottom: 20px; font-size: 16px; line-height: 1.7;">
+          OptiChain is a cutting-edge supply chain analytics tool that leverages advanced forecasting models to help businesses 
+          optimize their operations, reduce costs, and improve efficiency. By combining the power of ARIMA and 
+          Prophet models, OptiChain provides accurate demand forecasts and actionable insights to drive better business decisions.
+        </p>
+        
+        <h2 style="margin: 30px 0 20px; color: var(--primary-color);">Key Features</h2>
+        
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h3 class="feature-title">Dual Model Forecasting</h3>
+            <p class="feature-description">Utilizes both ARIMA and Prophet models to provide comprehensive demand forecasting with higher accuracy.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">
+              <i class="fas fa-briefcase"></i>
+            </div>
+            <h3 class="feature-title">Business Impact Analysis</h3>
+            <p class="feature-description">Quantifies the financial and operational impact of optimized decisions.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3 class="feature-title">Visual Analytics</h3>
+            <p class="feature-description">Interactive charts and visualizations to understand forecast trends and model performance.</p>
+          </div>
+          
+          <div class="feature">
+            <div class="feature-icon">
+              <i class="fas fa-sync"></i>
+            </div>
+            <h3 class="feature-title">Real-time Processing</h3>
+            <p class="feature-description">Fast data processing and model execution for quick decision-making.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="notification" class="notification"></div>
+  
+  <div id="successAnimation" class="success-animation">
+    <div class="success-circle">
+      <i class="fas fa-check"></i>
+    </div>
+    <div class="success-message">File Uploaded Successfully!</div>
+    <div class="success-description">Your data is being processed with ARIMA & Prophet models</div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const loading = document.getElementById('loading');
+    const notification = document.getElementById('notification');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const restartButton = document.getElementById('restartButton');
+    const successAnimation = document.getElementById('successAnimation');
+
+    // File upload handlers
+    uploadArea.addEventListener('click', () => fileInput.click());
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileUpload();
+      }
+    });
+    
+    fileInput.addEventListener('change', handleFileUpload);
+    uploadButton.addEventListener('click', handleFileUpload);
+    restartButton.addEventListener('click', restartAnalysis);
+
+    // Tab switching
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-tab');
+        const parentSection = tab.closest('.content-section');
+        
+        // Handle tabs within each section
+        const sectionTabs = parentSection.querySelectorAll('.tab');
+        const sectionTabContents = parentSection.querySelectorAll('.tab-content');
+        
+        sectionTabs.forEach(t => t.classList.remove('active'));
+        sectionTabContents.forEach(tc => tc.classList.remove('active'));
+        
+        tab.classList.add('active');
+        parentSection.querySelector(`#${tabId}-tab`).classList.add('active');
+      });
+    });
+
+    // Navigation
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = link.getAttribute('data-section');
+        
+        navLinks.forEach(l => l.classList.remove('active'));
+        contentSections.forEach(s => s.style.display = 'none');
+        
+        link.classList.add('active');
+        document.getElementById(sectionId).style.display = 'block';
+      });
+    });
+
+    // File input change handler with size validation
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        // Check file size (100MB limit)
+        const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+        
+        if (file.size > maxSize) {
+          showNotification(`File is too large. Maximum size is 100MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`, 'error');
+          fileInput.value = ''; // Clear the file input
+          return;
+        }
+        
+        // Check file type
+        const allowedTypes = ['text/csv', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(csv|xlsx|xls)$/i)) {
+          showNotification('Invalid file type. Please upload CSV or Excel files.', 'error');
+          fileInput.value = ''; // Clear the file input
+          return;
+        }
+      }
+    });
+
+    // File upload function
+    function handleFileUpload() {
+      if (!fileInput.files.length) {
+        showNotification('Please select a file to upload', 'error');
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      
+      // Double-check file size on upload
+      const maxSize = 100 * 1024 * 1024; // 100MB
+      if (file.size > maxSize) {
+        showNotification(`File is too large. Maximum size is 100MB. Your file is ${(file.size / (1024 * 1024)).toFixed(2)}MB.`, 'error');
+        return;
+      }
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      loading.style.display = 'block';
+      uploadButton.disabled = true;
+      
+      console.log("Sending request to backend...");
+      
+      fetch("http://127.0.0.1:5000/upload", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => {
+        console.log("Response status:", response.status);
+        // Check if response is OK
+        if (!response.ok) {
+          return response.json().then(err => { 
+            console.error("Error response:", err);
+            throw err; 
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        loading.style.display = 'none';
+        uploadButton.disabled = false;
+        
+        console.log("Response received:", data);
+        
+        if (data.status === "success") {
+          // Show success animation
+          showSuccessAnimation();
+          
+          // Hide success animation after 2 seconds
+          setTimeout(() => {
+            successAnimation.style.display = 'none';
+            showNotification('Data processed successfully!', 'success');
+            
+            // Display results and navigate to analytics section
+            displayResults(data);
+            
+            // Automatically navigate to analytics section
+            navLinks.forEach(l => l.classList.remove('active'));
+            contentSections.forEach(s => s.style.display = 'none');
+            
+            document.querySelector('[data-section="analytics"]').classList.add('active');
+            document.getElementById('analytics').style.display = 'block';
+            
+            // Set the first tab as active
+            const analyticsTabs = document.querySelectorAll('#analytics .tab');
+            const analyticsTabContents = document.querySelectorAll('#analytics .tab-content');
+            
+            analyticsTabs.forEach(t => t.classList.remove('active'));
+            analyticsTabContents.forEach(tc => tc.classList.remove('active'));
+            
+            analyticsTabs[0].classList.add('active');
+            document.getElementById('arima-details-tab').classList.add('active');
+          }, 2000);
+        } else {
+          console.error("Error response:", data);
+          showNotification('Error: ' + data.message, 'error');
+        }
+      })
+      .catch(err => {
+        loading.style.display = 'none';
+        uploadButton.disabled = false;
+        console.error("Upload failed:", err);
+        showNotification('Upload failed: ' + (err.message || err), 'error');
+      });
+    }
+
+    // Show success animation
+    function showSuccessAnimation() {
+      successAnimation.style.display = 'block';
+    }
+
+    // Display results function
+    function displayResults(data) {
+      try {
+        console.log("Displaying results:", data);
+        
+        // Check if data and results exist
+        if (!data || !data.results) {
+          console.error("Invalid data structure:", data);
+          showNotification('Error: Invalid data received from server', 'error');
+          return;
+        }
+        
+        const results = data.results;
+        
+        // Update metrics in home section
+        if (results.mape !== null && results.mape !== undefined) {
+          document.getElementById('mape').textContent = results.mape.toFixed(2) + '%';
+          console.log("Updated MAPE:", results.mape);
+        }
+        if (results.rmse !== null && results.rmse !== undefined) {
+          document.getElementById('rmse').textContent = results.rmse.toFixed(2);
+          console.log("Updated RMSE:", results.rmse);
+        }
+        if (results.accuracy !== null && results.accuracy !== undefined) {
+          document.getElementById('accuracy').textContent = results.accuracy.toFixed(2) + '%';
+          console.log("Updated Accuracy:", results.accuracy);
+        }
+        
+        // Update model parameters and metrics in analytics section
+        if (results.arima) {
+          document.getElementById('arima-p').textContent = results.arima.p || '--';
+          document.getElementById('arima-d').textContent = results.arima.d || '--';
+          document.getElementById('arima-q').textContent = results.arima.q || '--';
+          document.getElementById('arima-mape').textContent = (results.arima.mape !== null && results.arima.mape !== undefined) ? (results.arima.mape.toFixed(2) + '%') : '--';
+          document.getElementById('arima-rmse').textContent = (results.arima.rmse !== null && results.arima.rmse !== undefined) ? results.arima.rmse.toFixed(2) : '--';
+        }
+        
+        if (results.prophet) {
+          document.getElementById('prophet-seasonality').textContent = results.prophet.seasonality || '--';
+          document.getElementById('prophet-trend').textContent = results.prophet.trend || '--';
+          document.getElementById('prophet-mape').textContent = (results.prophet.mape !== null && results.prophet.mape !== undefined) ? (results.prophet.mape.toFixed(2) + '%') : '--';
+          document.getElementById('prophet-rmse').textContent = (results.prophet.rmse !== null && results.prophet.rmse !== undefined) ? results.prophet.rmse.toFixed(2) : '--';
+        }
+        
+        // Update business impact
+        if (results.business_impact) {
+          document.getElementById('cost-reduction').textContent = results.business_impact.cost_reduction || '--';
+          document.getElementById('revenue-increase').textContent = results.business_impact.revenue_increase || '--';
+          document.getElementById('efficiency-improvement').textContent = results.business_impact.efficiency_improvement || '--';
+          document.getElementById('satisfaction-improvement').textContent = results.business_impact.satisfaction_improvement || '--';
+          
+          // Analytics section business impact
+          document.getElementById('analytics-cost-reduction').textContent = results.business_impact.cost_reduction || '--';
+          document.getElementById('analytics-cost-savings').textContent = results.business_impact.cost_savings || '--';
+          document.getElementById('analytics-revenue-increase').textContent = results.business_impact.revenue_increase || '--';
+          document.getElementById('analytics-revenue-gain').textContent = results.business_impact.revenue_gain || '--';
+          document.getElementById('analytics-efficiency-improvement').textContent = results.business_impact.efficiency_improvement || '--';
+          document.getElementById('analytics-satisfaction-improvement').textContent = results.business_impact.satisfaction_improvement || '--';
+        }
+        
+        // Update demand projections
+        if (results.demand_projections) {
+          document.getElementById('next-quarter-demand').textContent = (results.demand_projections.next_quarter !== null && results.demand_projections.next_quarter !== undefined) ? (results.demand_projections.next_quarter.toFixed(1) + '%') : '--';
+          document.getElementById('peak-period').textContent = results.demand_projections.peak_period || '--';
+          document.getElementById('stockout-risk').textContent = results.demand_projections.stockout_risk || '--';
+          document.getElementById('recommended-stock').textContent = (results.demand_projections.recommended_stock !== null && results.demand_projections.recommended_stock !== undefined) ? (results.demand_projections.recommended_stock + '%') : '--';
+        }
+        
+        // Create ARIMA chart
+        if (results.dates && results.arima && results.arima.forecast) {
+          const arimaTrace1 = {
+            x: results.dates,
+            y: results.history,
+            mode: "lines",
+            name: "Historical",
+            line: { color: '#3498db' }
+          };
+          const arimaTrace2 = {
+            x: results.dates.slice(-results.arima.forecast.length),
+            y: results.arima.forecast,
+            mode: "lines+markers",
+            name: "ARIMA Forecast",
+            line: { color: '#e74c3c' }
+          };
+          
+          // Add confidence intervals if available
+          if (results.arima.lower && results.arima.upper) {
+            const arimaTrace3 = {
+              x: results.dates.slice(-results.arima.lower.length),
+              y: results.arima.lower,
+              mode: "lines",
+              line: { color: 'rgba(231, 76, 60, 0.2)', width: 0 },
+              showlegend: false,
+              name: "Lower Bound"
+            };
+            const arimaTrace4 = {
+              x: results.dates.slice(-results.arima.upper.length),
+              y: results.arima.upper,
+              mode: "lines",
+              line: { color: 'rgba(231, 76, 60, 0.2)', width: 0 },
+              fill: 'tonexty',
+              fillcolor: 'rgba(231, 76, 60, 0.2)',
+              name: "Upper Bound"
+            };
+            
+            const arimaLayout = {
+              title: "ARIMA Model Forecast with Confidence Intervals",
+              xaxis: { title: "Date" },
+              yaxis: { title: "Demand" },
+              plot_bgcolor: 'rgba(0,0,0,0)',
+              paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot("arimaDetailsChart", [arimaTrace1, arimaTrace2, arimaTrace3, arimaTrace4], arimaLayout);
+          } else {
+            const arimaLayout = {
+              title: "ARIMA Model Forecast",
+              xaxis: { title: "Date" },
+              yaxis: { title: "Demand" },
+              plot_bgcolor: 'rgba(0,0,0,0)',
+              paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot("arimaDetailsChart", [arimaTrace1, arimaTrace2], arimaLayout);
+          }
+        }
+        
+        // Create Prophet chart
+        if (results.dates && results.prophet && results.prophet.forecast) {
+          const prophetTrace1 = {
+            x: results.dates,
+            y: results.history,
+            mode: "lines",
+            name: "Historical",
+            line: { color: '#3498db' }
+          };
+          const prophetTrace2 = {
+            x: results.dates.slice(-results.prophet.forecast.length),
+            y: results.prophet.forecast,
+            mode: "lines+markers",
+            name: "Prophet Forecast",
+            line: { color: '#2ecc71' }
+          };
+          
+          // Add confidence intervals if available
+          if (results.prophet.lower && results.prophet.upper) {
+            const prophetTrace3 = {
+              x: results.dates.slice(-results.prophet.lower.length),
+              y: results.prophet.lower,
+              mode: "lines",
+              line: { color: 'rgba(46, 204, 113, 0.2)', width: 0 },
+              showlegend: false,
+              name: "Lower Bound"
+            };
+            const prophetTrace4 = {
+              x: results.dates.slice(-results.prophet.upper.length),
+              y: results.prophet.upper,
+              mode: "lines",
+              line: { color: 'rgba(46, 204, 113, 0.2)', width: 0 },
+              fill: 'tonexty',
+              fillcolor: 'rgba(46, 204, 113, 0.2)',
+              name: "Upper Bound"
+            };
+            
+            const prophetLayout = {
+              title: "Prophet Model Forecast with Confidence Intervals",
+              xaxis: { title: "Date" },
+              yaxis: { title: "Demand" },
+              plot_bgcolor: 'rgba(0,0,0,0)',
+              paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot("prophetDetailsChart", [prophetTrace1, prophetTrace2, prophetTrace3, prophetTrace4], prophetLayout);
+          } else {
+            const prophetLayout = {
+              title: "Prophet Model Forecast",
+              xaxis: { title: "Date" },
+              yaxis: { title: "Demand" },
+              plot_bgcolor: 'rgba(0,0,0,0)',
+              paper_bgcolor: 'rgba(0,0,0,0)'
+            };
+            
+            Plotly.newPlot("prophetDetailsChart", [prophetTrace1, prophetTrace2], prophetLayout);
+          }
+        }
+        
+        // Create comparison chart
+        if (results.dates && results.arima && results.arima.forecast && results.prophet && results.prophet.forecast) {
+          const compTrace1 = {
+            x: results.dates,
+            y: results.history,
+            mode: "lines",
+            name: "Historical",
+            line: { color: '#3498db' }
+          };
+          const compTrace2 = {
+            x: results.dates.slice(-results.arima.forecast.length),
+            y: results.arima.forecast,
+            mode: "lines",
+            name: "ARIMA Forecast",
+            line: { color: '#e74c3c' }
+          };
+          const compTrace3 = {
+            x: results.dates.slice(-results.prophet.forecast.length),
+            y: results.prophet.forecast,
+            mode: "lines",
+            name: "Prophet Forecast",
+            line: { color: '#2ecc71' }
+          };
+          
+          const compLayout = {
+            title: "Model Comparison",
+            xaxis: { title: "Date" },
+            yaxis: { title: "Demand" },
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)'
+          };
+          
+          Plotly.newPlot("modelComparisonChart", [compTrace1, compTrace2, compTrace3], compLayout);
+        }
+        
+        console.log("All results displayed successfully");
+      } catch (error) {
+        console.error("Error in displayResults:", error);
+        showNotification('Error displaying results: ' + error.message, 'error');
+      }
+    }
+
+    // Restart analysis function
+    function restartAnalysis() {
+      // Reset all values
+      document.getElementById('mape').textContent = '--';
+      document.getElementById('rmse').textContent = '--';
+      document.getElementById('accuracy').textContent = '--';
+      
+      document.getElementById('arima-p').textContent = '--';
+      document.getElementById('arima-d').textContent = '--';
+      document.getElementById('arima-q').textContent = '--';
+      document.getElementById('arima-mape').textContent = '--';
+      document.getElementById('arima-rmse').textContent = '--';
+      
+      document.getElementById('prophet-seasonality').textContent = '--';
+      document.getElementById('prophet-trend').textContent = '--';
+      document.getElementById('prophet-mape').textContent = '--';
+      document.getElementById('prophet-rmse').textContent = '--';
+      
+      document.getElementById('cost-reduction').textContent = '--';
+      document.getElementById('revenue-increase').textContent = '--';
+      document.getElementById('efficiency-improvement').textContent = '--';
+      document.getElementById('satisfaction-improvement').textContent = '--';
+      
+      // Navigate back to home section
+      navLinks.forEach(l => l.classList.remove('active'));
+      contentSections.forEach(s => s.style.display = 'none');
+      
+      document.querySelector('[data-section="home"]').classList.add('active');
+      document.getElementById('home').style.display = 'block';
+      
+      // Reset file input
+      fileInput.value = '';
+      
+      // Show notification
+      showNotification('Analysis restarted. Please upload a new file.', 'success');
+    }
+
+    // Notification function
+    function showNotification(message, type) {
+      notification.textContent = message;
+      notification.className = 'notification ' + type;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
